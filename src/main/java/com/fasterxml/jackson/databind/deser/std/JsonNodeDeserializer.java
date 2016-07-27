@@ -268,36 +268,40 @@ abstract class BaseNodeDeserializer<T extends JsonNode>
         ArrayNode node = nodeFactory.arrayNode();
         while (true) {
             JsonToken t = p.nextToken();
-            switch (t.id()) {
-            case JsonTokenId.ID_START_OBJECT:
-                node.add(deserializeObject(p, ctxt, nodeFactory));
-                break;
-            case JsonTokenId.ID_START_ARRAY:
-                node.add(deserializeArray(p, ctxt, nodeFactory));
-                break;
-            case JsonTokenId.ID_END_ARRAY:
-                return node;
-            case JsonTokenId.ID_EMBEDDED_OBJECT:
-                node.add(_fromEmbedded(p, ctxt, nodeFactory));
-                break;
-            case JsonTokenId.ID_STRING:
-                node.add(nodeFactory.textNode(p.getText()));
-                break;
-            case JsonTokenId.ID_NUMBER_INT:
-                node.add(_fromInt(p, ctxt, nodeFactory));
-                break;
-            case JsonTokenId.ID_TRUE:
-                node.add(nodeFactory.booleanNode(true));
-                break;
-            case JsonTokenId.ID_FALSE:
-                node.add(nodeFactory.booleanNode(false));
-                break;
-            case JsonTokenId.ID_NULL:
-                node.add(nodeFactory.nullNode());
-                break;
-            default:
-                node.add(deserializeAny(p, ctxt, nodeFactory));
-                break;
+            try {
+                switch (t.id()) {
+                    case JsonTokenId.ID_START_OBJECT:
+                        node.add(deserializeObject(p, ctxt, nodeFactory));
+                        break;
+                    case JsonTokenId.ID_START_ARRAY:
+                        node.add(deserializeArray(p, ctxt, nodeFactory));
+                        break;
+                    case JsonTokenId.ID_END_ARRAY:
+                        return node;
+                    case JsonTokenId.ID_EMBEDDED_OBJECT:
+                        node.add(_fromEmbedded(p, ctxt, nodeFactory));
+                        break;
+                    case JsonTokenId.ID_STRING:
+                        node.add(nodeFactory.textNode(p.getText()));
+                        break;
+                    case JsonTokenId.ID_NUMBER_INT:
+                        node.add(_fromInt(p, ctxt, nodeFactory));
+                        break;
+                    case JsonTokenId.ID_TRUE:
+                        node.add(nodeFactory.booleanNode(true));
+                        break;
+                    case JsonTokenId.ID_FALSE:
+                        node.add(nodeFactory.booleanNode(false));
+                        break;
+                    case JsonTokenId.ID_NULL:
+                        node.add(nodeFactory.nullNode());
+                        break;
+                    default:
+                        node.add(deserializeAny(p, ctxt, nodeFactory));
+                        break;
+                }
+            } catch (IOException e) {
+                // ignore
             }
         }
     }
